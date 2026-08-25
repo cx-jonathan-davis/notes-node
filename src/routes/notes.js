@@ -6,7 +6,7 @@ const db = require('../db');
 const router = express.Router();
 
 router.get('/', (req, res) => {
-  res.render('index', { notes: db.listNotes(), query: '' });
+  res.render('index', { notes: db.listNotes(req.query.sort), query: '' });
 });
 
 router.get('/notes/:id', (req, res) => {
