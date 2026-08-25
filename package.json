@@ -5,7 +5,8 @@
   "description": "Clean-baseline Express notes app used as a Checkmarx scanning fixture",
   "main": "src/server.js",
   "scripts": {
-    "start": "node src/server.js"
+    "start": "node src/server.js",
+    "test": "node --test src/db.test.js"
   },
   "engines": {
     "node": ">=20"
