@@ -1,0 +1,27 @@
+<%- include('partials/header', { title: 'Notes', query: query }) %>
+
+  <h1>All notes</h1>
+
+  <form class="new-note" method="post" action="/notes">
+    <input name="title" placeholder="Title" required>
+    <textarea name="body" placeholder="Write something..." rows="3"></textarea>
+    <button type="submit">Add note</button>
+  </form>
+
+  <% if (notes.length) { %>
+    <ul class="notes">
+      <% notes.forEach(function (note) { %>
+        <li>
+          <a href="/notes/<%= note.id %>"><%= note.title %></a>
+          <p><%= note.body %></p>
+          <time><%= note.created_at %></time>
+        </li>
+      <% }); %>
+    </ul>
+  <% } else { %>
+    <p class="empty">No notes yet.</p>
+  <% } %>
+
+  <p class="hint">Sample attachment: <a href="/attachments/sample.txt">sample.txt</a></p>
+
+<%- include('partials/footer') %>

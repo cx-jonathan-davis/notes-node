@@ -1,0 +1,19 @@
+{
+  "name": "notes-node",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Clean-baseline Express notes app used as a Checkmarx scanning fixture",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node src/server.js"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {
+    "better-sqlite3": "13.0.3",
+    "ejs": "3.1.10",
+    "express": "4.22.2",
+    "express-session": "1.19.0"
+  }
+}
