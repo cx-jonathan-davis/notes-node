@@ -1,6 +1,7 @@
 'use strict';
 
 const express = require('express');
+const escapeHtml = require('escape-html');
 const db = require('../db');
 
 const router = express.Router();
@@ -26,7 +27,7 @@ router.post('/notes', (req, res) => {
 });
 
 router.get('/search', (req, res) => {
-  const query = String(req.query.q || '').trim();
+  const query = escapeHtml(String(req.query.q || '').trim());
   res.render('search', { query, results: query ? db.searchNotes(query) : [] });
 });
 
