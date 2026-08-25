@@ -13,7 +13,7 @@
       <% notes.forEach(function (note) { %>
         <li>
           <a href="/notes/<%= note.id %>"><%= note.title %></a>
-          <p><%= note.body %></p>
+          <p><%- escapeHtml(note.body) %></p>
           <time><%= note.created_at %></time>
         </li>
       <% }); %>
@@ -22,6 +22,6 @@
     <p class="empty">No notes yet.</p>
   <% } %>
 
-  <p class="hint">Sample attachment: <a href="/attachments/sample.txt">sample.txt</a></p>
+  <p class="hint">Sample attachment: <a href="/attachments?name=sample.txt">sample.txt</a></p>
 
 <%- include('partials/footer') %>

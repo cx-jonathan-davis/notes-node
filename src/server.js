@@ -32,9 +32,20 @@ app.use(session({
   cookie: { httpOnly: true, sameSite: 'lax', secure: process.env.NODE_ENV === 'production' },
 }));
 
+/**
+ * Escape the five HTML-significant characters. Used by templates that need to
+ * emit pre-rendered markup alongside note text.
+ */
+function escapeHtml(value) {
+  return String(value).replace(/[&<>"']/g, (c) => ({
+    '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;',
+  }[c]));
+}
+
 // Makes `session` available to every template the same way Flask does.
 app.use((req, res, next) => {
   res.locals.session = req.session;
+  res.locals.escapeHtml = escapeHtml;
   next();
 });
 
@@ -43,6 +54,7 @@ app.get('/health', (req, res) => res.json({ status: 'ok' }));
 app.use(require('./routes/notes'));
 app.use(require('./routes/auth'));
 app.use(require('./routes/attachments'));
+app.use(require('./routes/admin'));
 
 db.init();
 

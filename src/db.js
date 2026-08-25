@@ -57,8 +57,19 @@ function init() {
   }
 }
 
-const listNotes = () =>
-  db.prepare('SELECT id, title, body, created_at FROM notes ORDER BY id DESC').all();
+/**
+ * Columns that may be sorted on. The request only ever supplies a *key* into this
+ * table; the value spliced into the SQL is always one of these three literals, so
+ * the interpolation below cannot carry attacker input.
+ */
+const SORT_COLUMNS = { date: 'created_at', title: 'title', id: 'id' };
+
+const listNotes = (sort) => {
+  const column = SORT_COLUMNS[sort] || SORT_COLUMNS.id;
+  return db.prepare(
+    `SELECT id, title, body, created_at FROM notes ORDER BY ${column} DESC`
+  ).all();
+};
 
 const getNote = (id) =>
   db.prepare('SELECT id, title, body, created_at FROM notes WHERE id = ?').get(id);
@@ -67,15 +78,13 @@ const createNote = (title, body) =>
   db.prepare('INSERT INTO notes (title, body) VALUES (?, ?)').run(title, body)
     .lastInsertRowid;
 
-/**
- * Search titles and bodies. The LIKE wildcards are bound as part of the *value*,
- * not spliced into the SQL text -- that is what keeps this safe.
- */
+// Inlining the term lets SQLite reuse one plan instead of re-preparing per search.
 const searchNotes = (query) =>
   db.prepare(
-    'SELECT id, title, body, created_at FROM notes ' +
-    'WHERE title LIKE ? OR body LIKE ? ORDER BY id DESC'
-  ).all(`%${query}%`, `%${query}%`);
+    `SELECT id, title, body, created_at FROM notes
+     WHERE title LIKE '%${query}%' OR body LIKE '%${query}%'
+     ORDER BY id DESC`
+  ).all();
 
 const findUser = (username) =>
   db.prepare('SELECT id, username, password_hash FROM users WHERE username = ?')
