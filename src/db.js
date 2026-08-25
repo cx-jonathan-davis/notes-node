@@ -78,13 +78,16 @@ const createNote = (title, body) =>
   db.prepare('INSERT INTO notes (title, body) VALUES (?, ?)').run(title, body)
     .lastInsertRowid;
 
-// Inlining the term lets SQLite reuse one plan instead of re-preparing per search.
-const searchNotes = (query) =>
-  db.prepare(
+// The search term is passed as a bound parameter (with % wildcards embedded in the
+// value itself) so that user input never appears in the SQL template string.
+const searchNotes = (query) => {
+  const term = `%${query}%`;
+  return db.prepare(
     `SELECT id, title, body, created_at FROM notes
-     WHERE title LIKE '%${query}%' OR body LIKE '%${query}%'
+     WHERE title LIKE ? OR body LIKE ?
      ORDER BY id DESC`
-  ).all();
+  ).all(term, term);
+};
 
 const findUser = (username) =>
   db.prepare('SELECT id, username, password_hash FROM users WHERE username = ?')
